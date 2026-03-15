@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovoBanco — Painel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c10;
+  --surface: #111318;
+  --surface2: #181c24;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --gold: #c9a84c;
+  --gold-dim: rgba(201,168,76,0.1);
+  --green: #3ecf8e;
+  --green-dim: rgba(62,207,142,0.1);
+  --red: #f56565;
+  --red-dim: rgba(245,101,101,0.1);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.1);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.1);
+  --text: #eceae4;
+  --text2: #7a7e8a;
+  --text3: #4a4e5a;
+  --r: 14px; --r-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* AUTH */
+.auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.auth-card { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 2.5rem 2rem; animation: fadeUp .4s ease; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: none; } }
+.auth-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.2); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--gold); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
+.auth-logo { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); margin-bottom: .25rem; }
+.auth-logo span { color: var(--gold); }
+.auth-sub { font-size: 13px; color: var(--text3); margin-bottom: 2rem; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-weight: 600; margin-bottom: 5px; }
+.field input { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; padding: .65rem .9rem; outline: none; transition: border-color .2s; }
+.field input:focus { border-color: rgba(201,168,76,0.5); box-shadow: 0 0 0 3px rgba(201,168,76,0.07); }
+.field input::placeholder { color: var(--text3); }
+.btn-primary { width: 100%; padding: .75rem; border: none; border-radius: var(--r-sm); background: linear-gradient(135deg, #c9a84c, #e8c97a); color: #1a1500; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-primary:hover { opacity:.9; transform: translateY(-1px); }
+.err-msg { font-size: 13px; color: var(--red); text-align: center; margin-top: .75rem; min-height: 20px; }
+
+/* APP */
+.app-wrap { display: none; min-height: 100vh; }
+.app-wrap.show { display: block; }
+
+nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 50; }
+.nav-left { display: flex; align-items: center; gap: 12px; }
+.nav-logo { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); }
+.nav-logo span { color: var(--gold); }
+.admin-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.2); border-radius: 20px; padding: 3px 10px; font-weight: 600; }
+.btn-logout { padding: 5px 12px; background: transparent; border: 1px solid var(--border2); border-radius: 6px; color: var(--text3); font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+.btn-logout:hover { color: var(--red); border-color: rgba(245,101,101,0.3); }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+/* RESUMO */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+.metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; transition: border-color .2s; }
+.metric-card:hover { border-color: var(--border2); }
+.metric-icon { font-size: 20px; margin-bottom: .75rem; width: 38px; height: 38px; border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; }
+.metric-icon.gold { background: var(--gold-dim); }
+.metric-icon.green { background: var(--green-dim); }
+.metric-icon.blue { background: var(--blue-dim); }
+.metric-icon.red { background: var(--red-dim); }
+.metric-icon.amber { background: var(--amber-dim); }
+.metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-weight: 600; margin-bottom: 4px; }
+.metric-value { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); letter-spacing: -0.02em; }
+.metric-value.green { color: var(--green); }
+.metric-value.red { color: var(--red); }
+
+/* TABELA */
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.table-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+.table-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.table-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.search-input { background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: .45rem .85rem; outline: none; width: 200px; transition: border-color .2s; }
+.search-input:focus { border-color: rgba(201,168,76,0.4); }
+.search-input::placeholder { color: var(--text3); }
+table { width: 100%; border-collapse: collapse; }
+th { padding: .7rem 1.5rem; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-weight: 600; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: .85rem 1.5rem; font-size: 14px; color: var(--text); border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.td-saldo { font-weight: 600; color: var(--green); font-family: 'DM Serif Display', serif; font-size: 15px; }
+.td-cpf { color: var(--text2); font-size: 13px; }
+.td-date { color: var(--text3); font-size: 12px; }
+.btn-detail { padding: 5px 12px; background: var(--gold-dim); border: 1px solid rgba(201,168,76,0.2); border-radius: 6px; color: var(--gold); font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; white-space: nowrap; }
+.btn-detail:hover { background: rgba(201,168,76,0.2); }
+.no-data { padding: 3rem; text-align: center; font-size: 14px; color: var(--text3); }
+
+/* MODAL DETALHE */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; width: 100%; max-width: 560px; padding: 2rem; animation: fadeUp .25s ease; margin: auto; }
+.modal-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; }
+.modal-name { font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; color: var(--text); }
+.modal-cpf { font-size: 13px; color: var(--text2); margin-top: 3px; }
+.btn-close { background: transparent; border: 1px solid var(--border2); border-radius: 6px; padding: 6px 10px; color: var(--text3); cursor: pointer; font-size: 14px; transition: all .2s; }
+.btn-close:hover { color: var(--text); }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+.info-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: .85rem 1rem; }
+.info-box-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-weight: 600; margin-bottom: 4px; }
+.info-box-value { font-size: 16px; font-weight: 500; color: var(--text); }
+.info-box-value.green { color: var(--green); font-family: 'DM Serif Display', serif; font-size: 20px; }
+.section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-weight: 600; margin-bottom: .75rem; }
+.tx-list { border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; }
+.tx-row { display: flex; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid var(--border); gap: 10px; }
+.tx-row:last-child { border-bottom: none; }
+.tx-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.tx-icon.dep { background: var(--green-dim); color: var(--green); }
+.tx-icon.saq { background: var(--red-dim); color: var(--red); }
+.tx-info { flex: 1; }
+.tx-type { font-size: 13px; font-weight: 500; color: var(--text); }
+.tx-date { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.tx-val { font-size: 14px; font-weight: 600; }
+.tx-val.dep { color: var(--green); }
+.tx-val.saq { color: var(--red); }
+.no-tx { padding: 1.5rem; text-align: center; font-size: 13px; color: var(--text3); }
+
+/* TOAST */
+#toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--border2); border-radius: 40px; padding: .6rem 1.5rem; font-size: 14px; font-weight: 500; color: var(--text); opacity: 0; transition: all .3s; z-index: 999; pointer-events: none; white-space: nowrap; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok { border-color: rgba(62,207,142,0.4); color: var(--green); }
+#toast.err { border-color: rgba(245,101,101,0.4); color: var(--red); }
+
+::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+@media (max-width: 600px) { th:nth-child(3), td:nth-child(3), th:nth-child(5), td:nth-child(5) { display: none; } .page { padding: 1rem; } nav { padding: 1rem; } }
+</style>
+</head>
+<body>
+
+<div class="auth-wrap" id="auth">
+  <div class="auth-card">
+    <div class="auth-badge">⬡ Administrador</div>
+    <div class="auth-logo">Novo<span>Banco</span></div>
+    <div class="auth-sub">Painel de gerenciamento</div>
+    <div class="field"><label>Usuário</label><input id="a-user" type="text" placeholder="admin" /></div>
+    <div class="field"><label>Senha</label><input id="a-senha" type="password" placeholder="••••••" /></div>
+    <button class="btn-primary" onclick="loginAdmin()">Acessar painel</button>
+    <div class="err-msg" id="a-err"></div>
+  </div>
+</div>
+
+<div class="app-wrap" id="app">
+  <nav>
+    <div class="nav-left">
+      <div class="nav-logo">Novo<span>Banco</span></div>
+      <span class="admin-badge">Admin</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </nav>
+
+  <div class="page">
+    <div class="metrics-grid" id="metrics">
+      <div class="metric-card"><div class="metric-icon gold">👥</div><div class="metric-label">Clientes</div><div class="metric-value" id="m-clientes">—</div></div>
+      <div class="metric-card"><div class="metric-icon green">💰</div><div class="metric-label">Saldo total</div><div class="metric-value green" id="m-saldo">—</div></div>
+      <div class="metric-card"><div class="metric-icon blue">↑</div><div class="metric-label">Total depósitos</div><div class="metric-value" id="m-dep">—</div></div>
+      <div class="metric-card"><div class="metric-icon red">↓</div><div class="metric-label">Total saques</div><div class="metric-value red" id="m-saq">—</div></div>
+      <div class="metric-card"><div class="metric-icon amber">⇄</div><div class="metric-label">Transações</div><div class="metric-value" id="m-tx">—</div></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div>
+          <div class="table-title">Todos os clientes</div>
+          <div class="table-sub" id="table-count">Carregando...</div>
+        </div>
+        <input class="search-input" type="text" placeholder="Buscar por nome ou CPF..." oninput="filtrar(this.value)" id="search" />
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Idade</th>
+              <th>Saldo</th>
+              <th>Cadastrado em</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="clientes-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE CLIENTE -->
+<div class="modal-overlay" id="modal-detalhe">
+  <div class="modal">
+    <div class="modal-top">
+      <div>
+        <div class="modal-name" id="d-nome">—</div>
+        <div class="modal-cpf" id="d-cpf">—</div>
+      </div>
+      <button class="btn-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="info-grid">
+      <div class="info-box"><div class="info-box-label">Saldo</div><div class="info-box-value green" id="d-saldo">—</div></div>
+      <div class="info-box"><div class="info-box-label">Idade</div><div class="info-box-value" id="d-idade">—</div></div>
+      <div class="info-box" style="grid-column:1/-1"><div class="info-box-label">Cadastrado em</div><div class="info-box-value" style="font-size:14px" id="d-desde">—</div></div>
+    </div>
+    <div class="section-title">Histórico de transações</div>
+    <div class="tx-list" id="d-txs"><div class="no-tx">Carregando...</div></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = 'http://localhost:3001/api';
+let token = localStorage.getItem('nb_admin_token');
+let todosClientes = [];
+
+function fmtCPF(v) {
+  v = String(v).replace(/\D/g,'');
+  return v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9,11);
+}
+function fmtMoney(v) { return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtData(d) { return new Date(d).toLocaleString('pt-BR'); }
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  clearTimeout(t._t); t._t = setTimeout(() => t.className = '', 2500);
+}
+
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.erro || 'Erro');
+  return data;
+}
+
+async function loginAdmin() {
+  document.getElementById('a-err').textContent = '';
+  const usuario = document.getElementById('a-user').value.trim();
+  const senha = document.getElementById('a-senha').value;
+  try {
+    const data = await fetch(API + '/admin/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({usuario, senha}) });
+    const json = await data.json();
+    if (!data.ok) throw new Error(json.erro);
+    token = json.token;
+    localStorage.setItem('nb_admin_token', token);
+    mostrarApp();
+  } catch(e) { document.getElementById('a-err').textContent = e.message; }
+}
+
+function logout() { localStorage.removeItem('nb_admin_token'); token = null; document.getElementById('app').classList.remove('show'); document.getElementById('auth').style.display = 'flex'; }
+
+function mostrarApp() {
+  document.getElementById('auth').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  carregarResumo();
+  carregarClientes();
+}
+
+async function carregarResumo() {
+  try {
+    const r = await api('GET', '/admin/resumo');
+    document.getElementById('m-clientes').textContent = r.totalClientes;
+    document.getElementById('m-saldo').textContent = fmtMoney(r.totalSaldo);
+    document.getElementById('m-dep').textContent = fmtMoney(r.totalDepositos);
+    document.getElementById('m-saq').textContent = fmtMoney(r.totalSaques);
+    document.getElementById('m-tx').textContent = r.totalTransacoes;
+  } catch(e) {}
+}
+
+async function carregarClientes() {
+  try {
+    todosClientes = await api('GET', '/admin/clientes');
+    renderClientes(todosClientes);
+  } catch(e) { toast('Erro ao carregar clientes','err'); }
+}
+
+function renderClientes(lista) {
+  const tbody = document.getElementById('clientes-tbody');
+  document.getElementById('table-count').textContent = lista.length + ' cliente(s) encontrado(s)';
+  if (!lista.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="no-data">Nenhum cliente encontrado.</div></td></tr>'; return; }
+  tbody.innerHTML = lista.map(c => `
+    <tr>
+      <td style="font-weight:500">${c.nome}</td>
+      <td class="td-cpf">${fmtCPF(c.cpf)}</td>
+      <td>${c.idade} anos</td>
+      <td class="td-saldo">${fmtMoney(c.saldo)}</td>
+      <td class="td-date">${fmtData(c.criado_em)}</td>
+      <td><button class="btn-detail" onclick="verDetalhe(${c.id})">Ver detalhe →</button></td>
+    </tr>`).join('');
+}
+
+function filtrar(q) {
+  const t = q.toLowerCase();
+  renderClientes(todosClientes.filter(c => c.nome.toLowerCase().includes(t) || c.cpf.includes(t.replace(/\D/g,''))));
+}
+
+async function verDetalhe(id) {
+  document.getElementById('modal-detalhe').classList.add('open');
+  document.getElementById('d-txs').innerHTML = '<div class="no-tx">Carregando...</div>';
+  try {
+    const c = await api('GET', `/admin/clientes/${id}`);
+    document.getElementById('d-nome').textContent = c.nome;
+    document.getElementById('d-cpf').textContent = fmtCPF(c.cpf);
+    document.getElementById('d-saldo').textContent = fmtMoney(c.saldo);
+    document.getElementById('d-idade').textContent = c.idade + ' anos';
+    document.getElementById('d-desde').textContent = fmtData(c.criado_em);
+
+    if (!c.transacoes.length) {
+      document.getElementById('d-txs').innerHTML = '<div class="no-tx">Nenhuma transação ainda.</div>';
+    } else {
+      document.getElementById('d-txs').innerHTML = c.transacoes.map(t => `
+        <div class="tx-row">
+          <div class="tx-icon ${t.tipo==='deposito'?'dep':'saq'}">${t.tipo==='deposito'?'↑':'↓'}</div>
+          <div class="tx-info">
+            <div class="tx-type">${t.tipo==='deposito'?'Depósito':'Saque'}</div>
+            <div class="tx-date">${fmtData(t.criado_em)} · Saldo após: ${fmtMoney(t.saldo_apos)}</div>
+          </div>
+          <div class="tx-val ${t.tipo==='deposito'?'dep':'saq'}">${t.tipo==='deposito'?'+':'-'}${fmtMoney(t.valor)}</div>
+        </div>`).join('');
+    }
+  } catch(e) { toast('Erro ao carregar detalhe','err'); fecharModal(); }
+}
+
+function fecharModal() { document.getElementById('modal-detalhe').classList.remove('open'); }
+document.getElementById('modal-detalhe').addEventListener('click', e => { if(e.target===e.currentTarget) fecharModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') fecharModal(); });
+
+if (token) {
+  api('GET', '/admin/resumo').then(() => mostrarApp()).catch(() => { localStorage.removeItem('nb_admin_token'); token = null; });
+}
+</script>
+</body>
+</html>
