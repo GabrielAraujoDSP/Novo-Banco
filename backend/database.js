@@ -53,14 +53,14 @@ async function iniciarBanco() {
     );
   `);
 
-  // Cria admin padrão se não existir
-  const adminExiste = dbGet('SELECT id FROM admins WHERE usuario = ?', ['admin']);
-  if (!adminExiste) {
-    const hash = bcrypt.hashSync('admin123', 10);
-    dbRun('INSERT INTO admins (usuario, senha_hash) VALUES (?, ?)', ['admin', hash]);
+// Cria admin padrão se não existir
+const adminExiste = dbGet('SELECT id FROM admins WHERE usuario = ?', ['adminalterado']);
+if (!adminExiste) {
+    const hash = bcrypt.hashSync('senhaalterada', 10);
+    dbRun('INSERT INTO admins (usuario, senha_hash) VALUES (?, ?)', ['adminalterado', hash]);
     salvar();
-    console.log('✅ Admin padrão criado → usuário: admin | senha: admin123');
-  }
+    console.log('✅ Admin criado → usuário: adminalterado | senha: senhaalterada');
+}
 
   // Sobrescreve métodos para salvar automaticamente após cada escrita
   const _run = db.run.bind(db);
