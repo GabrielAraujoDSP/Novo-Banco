@@ -27,6 +27,6 @@ iniciarBanco().then(() => {
     console.log(`\n🏦 NovoBanco rodando em http://localhost:${PORT}`);
     console.log(`👤 Página do cliente: http://localhost:${PORT}`);
     console.log(`🔐 Painel admin:      http://localhost:${PORT}/admin`);
-    console.log(`   Login admin → usuário: admin | senha: admin123\n`);
+    console.log(`   Login admin → usuário: adminalterado | senha: senhaalterada\n`);
   });
 });
