@@ -63,7 +63,7 @@ Acesse:
 - Cliente → http://localhost:3001
 - Admin → http://localhost:3001/admin
 
-Credenciais padrão do admin: `admin` / `admin123`
+Credenciais padrão do admin: `adminalterado` / `senhaalterada`
 
 ## Próximos passos
 
